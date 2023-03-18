@@ -1,0 +1,6 @@
+notion-client
+diffusers
+gradio
+openai
+#langchain
+langchain[all]
