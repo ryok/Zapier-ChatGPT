@@ -6,12 +6,15 @@ from langchain.agents.tools import Tool
 from langchain.chains.conversation.memory import ConversationBufferMemory
 # from langchain.utilities import GoogleSearchAPIWrapper
 from langchain.llms.openai import OpenAI
+from langchain.agents.agent_toolkits import ZapierToolkit
+from langchain.utilities.zapier import ZapierNLAWrapper
 import gradio as gr
 from notion_client import Client
 
 
 notion = Client(auth=os.environ['NOTION_TOKEN'])
 # search = GoogleSearchAPIWrapper()
+zapier = ZapierNLAWrapper()
 
 
 def cut_dialogue_history(history_memory, keep_last_n_words=500):
@@ -101,21 +104,9 @@ class ConversationBot:
         self.getuserprofile = GetUserProfile()
         self.getproductinfo = GetProductInfo()
         self.memory = ConversationBufferMemory(memory_key="chat_history", output_key='output')
-        self.tools = [
-            Tool(
-                name="Get User Profile",
-                func=self.getuserprofile.inference,
-                description="useful when you want to tell about specific name. "),
-            Tool(
-                name="Get Product Information",
-                func=self.getproductinfo.inference,
-                description="useful when you want to tell about specific product like apple or pencil. "),            # Tool(
-            #     name = "Current Search",
-            #     func=search.run,
-            #     description="useful for when you need to answer questions about current events or the current state of the world"),
-                    ]
+        self.toolkit = ZapierToolkit.from_zapier_nla_wrapper(zapier)
         self.agent = initialize_agent(
-            self.tools,
+            self.toolkit.get_tools(),
             self.llm,
             agent="conversational-react-description",
             memory=self.memory,
