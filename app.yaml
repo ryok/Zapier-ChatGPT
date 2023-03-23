@@ -1,2 +1,4 @@
 runtime: custom
 env: flex
+includes:
+- secret.yaml

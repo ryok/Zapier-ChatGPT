@@ -3,4 +3,5 @@ diffusers
 gradio
 openai
 #langchain
-langchain[all]
+#langchain[all]
+langchain==0.0.117
