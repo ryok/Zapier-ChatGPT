@@ -12,7 +12,7 @@ import gradio as gr
 from notion_client import Client
 
 
-notion = Client(auth=os.environ['NOTION_TOKEN'])
+# notion = Client(auth=os.environ['NOTION_TOKEN'])
 # search = GoogleSearchAPIWrapper()
 zapier = ZapierNLAWrapper()
 
@@ -128,7 +128,7 @@ class ConversationBot:
 if __name__ == '__main__':
     bot = ConversationBot()
     with gr.Blocks(css="#chatbot .overflow-y-auto{height:500px}") as demo:
-        chatbot = gr.Chatbot(elem_id="chatbot", label="Ask ChatGPT")
+        chatbot = gr.Chatbot(elem_id="chatbot", label="Zapier ChatGPT")
         state = gr.State([])
         with gr.Row():
             with gr.Column(scale=0.8):
