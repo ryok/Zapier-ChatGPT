@@ -20,11 +20,11 @@
 # }
 
 resource "google_storage_bucket" "bucket" {
-  name     = "test-bucket-random-001122-22"
+  name     = "test-bucket-rdafdasndom-001122-22"
   location = "us-west1"
 }
 
 resource "google_storage_bucket" "gcs_bucket" {
-  name     = "test-bucket-random-00112323"
+  name     = "test-bucket-randgdfhdfom-00112323"
   location = "us-west1"
 }
