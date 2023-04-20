@@ -1,4 +1,3 @@
-notion-client
 diffusers
 gradio
 openai

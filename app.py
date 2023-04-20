@@ -9,10 +9,8 @@ from langchain.llms.openai import OpenAI
 from langchain.agents.agent_toolkits import ZapierToolkit
 from langchain.utilities.zapier import ZapierNLAWrapper
 import gradio as gr
-from notion_client import Client
 
 
-# notion = Client(auth=os.environ['NOTION_TOKEN'])
 # search = GoogleSearchAPIWrapper()
 zapier = ZapierNLAWrapper()
 
@@ -34,75 +32,16 @@ def cut_dialogue_history(history_memory, keep_last_n_words=500):
 
 def on_token_change(user_token, state):
     print(user_token)
-    openai.api_key = user_token or os.environ.get("OPENAI_API_KEY")
+    # openai.api_key = user_token or os.environ.get("ZAPIER_NLA_API_KEY")
+    os.environ["ZAPIER_NLA_API_KEY"] = user_token
     state["user_token"] = user_token
     return state
-
-
-class GetProductInfo:
-    def __init__(self):
-        pass
-    
-    def inference(self, text):
-        print(f'GetProductInfo inference: {text}')
-
-        # print(f'{text} refined to {refined_text}')
-        product_table = notion.databases.query(
-            **{
-                'database_id' : 'feefd706df5b4bc8bf777386295e2483',  # データベースID
-                f'filter': {
-                    'property': 'Name',
-                    'rich_text': {
-                        'contains': f'{text}'
-                    }
-                },
-            }
-        )
-        print(f'GetProductInfo user_table: {product_table}')
-        price = product_table['results'][0]['properties']['Price']['number']
-        desciption = product_table['results'][0]['properties']['Description']['rich_text'][0]['plain_text']
-
-        out_msg = f"{text}は{price}です．{desciption}"
-
-        print(f'GetProductInfo out_msg: {out_msg}')
-        return out_msg
-
-
-class GetUserProfile:
-    def __init__(self):
-        pass
-    
-    def inference(self, text):
-        print(f'GetUserProfile inference: {text}')
-
-        # print(f'{text} refined to {refined_text}')
-        user_table = notion.databases.query(
-            **{
-                'database_id' : '6a11bf09627445b4b143e5d25d5d5e70',  # データベースID
-                f'filter': {
-                    'property': 'Name',
-                    'rich_text': {
-                        'contains': f'{text}'
-                    }
-                },
-            }
-        )
-        print(f'GetUserProfile user_table: {user_table}')
-        age = user_table['results'][0]['properties']['age']['number']
-        gendar = user_table['results'][0]['properties']['gendar']['select']['name']
-
-        out_msg = f"あなたは{gendar}で，{age}歳ですね．"
-
-        print(f'GetUserProfile out_msg: {out_msg}')
-        return out_msg
         
 
 class ConversationBot:
     def __init__(self):
         print("Initializing ChatGPT")
         self.llm = OpenAI(temperature=0)
-        self.getuserprofile = GetUserProfile()
-        self.getproductinfo = GetProductInfo()
         self.memory = ConversationBufferMemory(memory_key="chat_history", output_key='output')
         self.toolkit = ZapierToolkit.from_zapier_nla_wrapper(zapier)
         self.agent = initialize_agent(
@@ -137,8 +76,8 @@ if __name__ == '__main__':
                 clear = gr.Button("Clear️")
         with gr.Row():
             with gr.Column():
-                gr.Markdown("Enter your own OpenAI API Key to try out more than 5 times. You can get it [here](https://platform.openai.com/account/api-keys).")
-                user_token = gr.Textbox(placeholder="OpenAI API Key", type="password", show_label=False)
+                gr.Markdown("Enter your own Zapier API Key. You can get it [here](https://zapier.com/l/natural-language-actions).")
+                user_token = gr.Textbox(placeholder="Zapier API Key", type="password", show_label=False)
 
         txt.submit(bot.run_text, [txt, state], [chatbot, state])
         txt.submit(lambda: "", None, txt)
